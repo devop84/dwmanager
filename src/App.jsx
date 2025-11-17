@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
 import Clients from './pages/Clients'
 import Hotels from './pages/Hotels'
+import AddClient from './pages/AddClient'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import { getSession, deleteSession } from './lib/auth.js'
@@ -14,6 +15,8 @@ function App() {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [editClientId, setEditClientId] = useState(null)
+  const [clientsRefreshTrigger, setClientsRefreshTrigger] = useState(0)
 
   // Check if user is logged in on mount using session
   useEffect(() => {
@@ -67,8 +70,24 @@ function App() {
     }
   }
 
-  const handleNavigate = (page) => {
+  const handleNavigate = (page, clientId = null) => {
     setCurrentPage(page)
+    if (clientId) {
+      setEditClientId(clientId)
+    } else {
+      setEditClientId(null)
+    }
+  }
+
+  const handleClientSave = () => {
+    setCurrentPage('clients')
+    setEditClientId(null)
+    setClientsRefreshTrigger(prev => prev + 1)
+  }
+
+  const handleClientCancel = () => {
+    setCurrentPage('clients')
+    setEditClientId(null)
   }
 
   const renderPage = () => {
@@ -76,7 +95,11 @@ function App() {
       case 'dashboard':
         return <Dashboard />
       case 'clients':
-        return <Clients />
+        return <Clients onNavigate={handleNavigate} refreshTrigger={clientsRefreshTrigger} />
+      case 'add-client':
+        return <AddClient onSave={handleClientSave} onCancel={handleClientCancel} />
+      case 'edit-client':
+        return <AddClient clientId={editClientId} onSave={handleClientSave} onCancel={handleClientCancel} />
       case 'hotels':
         return <Hotels />
       default:

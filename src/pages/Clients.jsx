@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import sql from '../lib/neon.js'
 
-function Clients() {
+function Clients({ onNavigate, refreshTrigger }) {
   const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -10,13 +10,11 @@ function Clients() {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(30)
   const [searchTerm, setSearchTerm] = useState('')
-  const [editingClient, setEditingClient] = useState(null)
-  const [editForm, setEditForm] = useState({})
 
   // Fetch clients from database
   useEffect(() => {
     fetchClients()
-  }, [])
+  }, [refreshTrigger])
 
   const fetchClients = async () => {
     try {
@@ -120,47 +118,18 @@ function Clients() {
     }
   }
 
-  // Handle edit
-  const handleEdit = (client) => {
-    setEditingClient(client.id)
-    setEditForm({
-      nome_cliente: client.nome_cliente || '',
-      tel_celular: client.tel_celular || '',
-      email: client.email || '',
-      nacionalidade: client.nacionalidade || '',
-      obs: client.obs || '',
-      cpf: client.cpf || '',
-      data_nasc: client.data_nasc || ''
-    })
-  }
-
-  // Handle save edit
-  const handleSaveEdit = async () => {
-    try {
-      await sql`
-        UPDATE clients 
-        SET nome_cliente = ${editForm.nome_cliente || null},
-            tel_celular = ${editForm.tel_celular || null},
-            email = ${editForm.email || null},
-            nacionalidade = ${editForm.nacionalidade || null},
-            obs = ${editForm.obs || null},
-            cpf = ${editForm.cpf || null},
-            data_nasc = ${editForm.data_nasc || null},
-            updated_at = CURRENT_TIMESTAMP
-        WHERE id = ${editingClient}
-      `
-      setEditingClient(null)
-      await fetchClients()
-    } catch (err) {
-      console.error('Error updating client:', err)
-      alert('Failed to update client. Please try again.')
+  // Handle edit - navigate to edit page
+  const handleEdit = (clientId) => {
+    if (onNavigate) {
+      onNavigate('edit-client', clientId)
     }
   }
 
-  // Handle cancel edit
-  const handleCancelEdit = () => {
-    setEditingClient(null)
-    setEditForm({})
+  // Handle add client
+  const handleAddClient = () => {
+    if (onNavigate) {
+      onNavigate('add-client')
+    }
   }
 
   // Format date for display
@@ -241,7 +210,29 @@ function Clients() {
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">Clients</h1>
+      <div className="flex items-center gap-4 mb-4">
+        <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
+        <button
+          onClick={handleAddClient}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+          title="Add Client"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          <span className="hidden sm:inline">Add Client</span>
+        </button>
+      </div>
       <div className="mb-6">
         <input
           type="text"
@@ -329,124 +320,72 @@ function Clients() {
               ) : (
                 paginatedClients.map((client) => (
                   <tr key={client.id} className="hover:bg-gray-50">
-                    {editingClient === client.id ? (
-                      <>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {client.id}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="text"
-                            value={editForm.nome_cliente}
-                            onChange={(e) => setEditForm({ ...editForm, nome_cliente: e.target.value })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="text"
-                            value={editForm.tel_celular}
-                            onChange={(e) => setEditForm({ ...editForm, tel_celular: e.target.value })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="email"
-                            value={editForm.email}
-                            onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="text"
-                            value={editForm.nacionalidade}
-                            onChange={(e) => setEditForm({ ...editForm, nacionalidade: e.target.value })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          />
-                        </td>
-                        <td className="px-6 py-4">
-                          <input
-                            type="text"
-                            value={editForm.obs}
-                            onChange={(e) => setEditForm({ ...editForm, obs: e.target.value })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="text"
-                            value={editForm.cpf}
-                            onChange={(e) => setEditForm({ ...editForm, cpf: e.target.value })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="date"
-                            value={editForm.data_nasc || ''}
-                            onChange={(e) => setEditForm({ ...editForm, data_nasc: e.target.value })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={handleSaveEdit}
-                            className="text-indigo-600 hover:text-indigo-900 mr-3"
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {client.id}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {client.nome_cliente || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {client.tel_celular || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {client.email || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {client.nacionalidade || '-'}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                      {client.obs || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {client.cpf || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatDate(client.data_nasc)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleEdit(client.id)}
+                          className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50"
+                          title="Edit"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            Save
-                          </button>
-                          <button
-                            onClick={handleCancelEdit}
-                            className="text-gray-600 hover:text-gray-900"
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => handleDelete(client.id)}
+                          className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                          title="Delete"
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            Cancel
-                          </button>
-                        </td>
-                      </>
-                    ) : (
-                      <>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {client.id}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {client.nome_cliente || '-'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {client.tel_celular || '-'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {client.email || '-'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {client.nacionalidade || '-'}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                          {client.obs || '-'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {client.cpf || '-'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {formatDate(client.data_nasc)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button
-                            onClick={() => handleEdit(client)}
-                            className="text-indigo-600 hover:text-indigo-900 mr-3"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(client.id)}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </>
-                    )}
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}
