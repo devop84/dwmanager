@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
 import Sidebar from './components/Sidebar'
 import Dashboard from './pages/Dashboard'
-import Customers from './pages/Customers'
-import Instructors from './pages/Instructors'
-import Lessons from './pages/Lessons'
-import Rentals from './pages/Rentals'
+import Clients from './pages/Clients'
+import Hotels from './pages/Hotels'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import { getSession, deleteSession } from './lib/auth.js'
@@ -15,6 +13,7 @@ function App() {
   const [showSignup, setShowSignup] = useState(false)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   // Check if user is logged in on mount using session
   useEffect(() => {
@@ -76,14 +75,10 @@ function App() {
     switch (currentPage) {
       case 'dashboard':
         return <Dashboard />
-      case 'customers':
-        return <Customers />
-      case 'instructors':
-        return <Instructors />
-      case 'lessons':
-        return <Lessons />
-      case 'rentals':
-        return <Rentals />
+      case 'clients':
+        return <Clients />
+      case 'hotels':
+        return <Hotels />
       default:
         return <Dashboard />
     }
@@ -125,10 +120,66 @@ function App() {
         onNavigate={handleNavigate}
         onLogout={handleLogout}
         user={user}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
       
       {/* Main Content Area */}
-      <div className="flex-1 bg-white">
+      <div className="flex-1 bg-white w-full md:w-auto">
+        {/* Mobile Header with Burger Menu */}
+        <div className="md:hidden bg-gray-900 text-white p-4 flex items-center justify-between">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="text-white hover:text-gray-300 transition-colors"
+            aria-label="Open menu"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+          <div className="flex items-center gap-2">
+            <svg
+              className="w-6 h-6 text-indigo-400"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M3 12C3 12 5 8 8 8C11 8 13 12 13 12C13 12 11 16 8 16C5 16 3 12 3 12Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M13 12C13 12 15 8 18 8C21 8 23 12 23 12C23 12 21 16 18 16C15 16 13 12 13 12Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M3 12C3 12 5 16 8 16C11 16 13 12 13 12C13 12 11 8 8 8C5 8 3 12 3 12Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <h1 className="text-lg font-bold">DWMANAGER</h1>
+          </div>
+          <div className="w-6"></div>
+        </div>
         {renderPage()}
       </div>
     </div>
