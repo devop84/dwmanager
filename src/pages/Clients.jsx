@@ -185,41 +185,45 @@ function Clients() {
     if (totalPages <= 1) return null
     
     return (
-      <div className={`bg-white px-6 py-3 flex items-center justify-between border border-gray-200 rounded-lg shadow-sm ${isTop ? 'mb-4' : 'mt-4'}`}>
-        <div className="text-sm text-gray-700">
+      <div className={`bg-white px-4 md:px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-3 border border-gray-200 rounded-lg shadow-sm ${isTop ? 'mb-4' : 'mt-4'}`}>
+        <div className="text-xs md:text-sm text-gray-700 text-center md:text-left">
           Showing {startIndex + 1} to {Math.min(endIndex, filteredClients.length)} of {filteredClients.length} clients
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
           <button
             onClick={() => setCurrentPage(1)}
             disabled={currentPage === 1}
-            className="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+            className="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
           >
-            First
+            <span className="hidden sm:inline">First</span>
+            <span className="sm:hidden">«</span>
           </button>
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+            className="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
           >
-            Previous
+            <span className="hidden sm:inline">Previous</span>
+            <span className="sm:hidden">‹</span>
           </button>
-          <span className="px-3 py-1 text-sm text-gray-700">
+          <span className="px-2 md:px-3 py-1 text-xs md:text-sm text-gray-700 whitespace-nowrap">
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+            className="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
           >
-            Next
+            <span className="hidden sm:inline">Next</span>
+            <span className="sm:hidden">›</span>
           </button>
           <button
             onClick={() => setCurrentPage(totalPages)}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+            className="px-2 md:px-3 py-1 text-xs md:text-sm border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
           >
-            Last
+            <span className="hidden sm:inline">Last</span>
+            <span className="sm:hidden">»</span>
           </button>
         </div>
       </div>
@@ -237,17 +241,15 @@ function Clients() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Clients</h1>
-        <div className="w-64">
-          <input
-            type="text"
-            placeholder="Search clients..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-        </div>
+      <h1 className="text-3xl font-bold text-gray-900 mb-4">Clients</h1>
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search clients..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        />
       </div>
 
       {error && (
