@@ -158,37 +158,7 @@ function App() {
               />
             </svg>
           </button>
-          <div className="flex items-center gap-2">
-            <svg
-              className="w-6 h-6 text-indigo-400"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M3 12C3 12 5 8 8 8C11 8 13 12 13 12C13 12 11 16 8 16C5 16 3 12 3 12Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M13 12C13 12 15 8 18 8C21 8 23 12 23 12C23 12 21 16 18 16C15 16 13 12 13 12Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M3 12C3 12 5 16 8 16C11 16 13 12 13 12C13 12 11 8 8 8C5 8 3 12 3 12Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <h1 className="text-lg font-bold">DWMANAGER</h1>
-          </div>
+          <h1 className="text-lg font-bold">DWMANAGER</h1>
           <div className="w-6"></div>
         </div>
         {renderPage()}
