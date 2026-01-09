@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard'
 import Clients from './pages/Clients'
 import Hotels from './pages/Hotels'
 import AddClient from './pages/AddClient'
+import Users from './pages/Users'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import { getSession, deleteSession } from './lib/auth.js'
@@ -17,6 +18,7 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [editClientId, setEditClientId] = useState(null)
   const [clientsRefreshTrigger, setClientsRefreshTrigger] = useState(0)
+  const [usersRefreshTrigger, setUsersRefreshTrigger] = useState(0)
 
   // Check if user is logged in on mount using session
   useEffect(() => {
@@ -102,6 +104,8 @@ function App() {
         return <AddClient clientId={editClientId} onSave={handleClientSave} onCancel={handleClientCancel} />
       case 'hotels':
         return <Hotels />
+      case 'users':
+        return <Users onNavigate={handleNavigate} refreshTrigger={usersRefreshTrigger} />
       default:
         return <Dashboard />
     }

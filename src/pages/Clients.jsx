@@ -10,6 +10,8 @@ function Clients({ onNavigate, refreshTrigger }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(30)
   const [searchTerm, setSearchTerm] = useState('')
+  const [hoveredNoteId, setHoveredNoteId] = useState(null)
+  const [clickedNoteId, setClickedNoteId] = useState(null)
 
   // Fetch clients from database
   useEffect(() => {
@@ -267,19 +269,13 @@ function Clients({ onNavigate, refreshTrigger }) {
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('nome_cliente')}
                 >
-                  Name{renderSortIndicator('nome_cliente')}
+                  Name / CPF{renderSortIndicator('nome_cliente')}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('tel_celular')}
                 >
-                  Phone{renderSortIndicator('tel_celular')}
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('email')}
-                >
-                  Email{renderSortIndicator('email')}
+                  Phone / Email{renderSortIndicator('tel_celular')}
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
@@ -295,12 +291,6 @@ function Clients({ onNavigate, refreshTrigger }) {
                 </th>
                 <th
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                  onClick={() => handleSort('cpf')}
-                >
-                  CPF{renderSortIndicator('cpf')}
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort('data_nasc')}
                 >
                   Birth Date{renderSortIndicator('data_nasc')}
@@ -313,7 +303,7 @@ function Clients({ onNavigate, refreshTrigger }) {
             <tbody className="bg-white divide-y divide-gray-200">
               {paginatedClients.length === 0 ? (
                 <tr>
-                  <td colSpan="9" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
                     No clients found
                   </td>
                 </tr>
@@ -323,23 +313,67 @@ function Clients({ onNavigate, refreshTrigger }) {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {client.id}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {client.nome_cliente || '-'}
+                    <td className="px-6 py-4 text-sm text-gray-900">
+                      <div className="flex flex-col">
+                        <span className="font-medium whitespace-nowrap truncate">{client.nome_cliente || '-'}</span>
+                        <span className="text-xs text-gray-500 mt-0.5">{client.cpf || '-'}</span>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {client.tel_celular || '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {client.email || '-'}
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      <div className="flex flex-col">
+                        <span>{client.tel_celular || '-'}</span>
+                        <span className="text-xs text-gray-400 mt-0.5">{client.email || '-'}</span>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {client.nacionalidade || '-'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                      {client.obs || '-'}
-                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {client.cpf || '-'}
+                      {client.obs ? (
+                        <div className="relative inline-block">
+                          <button
+                            onClick={() => setClickedNoteId(clickedNoteId === client.id ? null : client.id)}
+                            onMouseEnter={() => setHoveredNoteId(client.id)}
+                            onMouseLeave={() => {
+                              if (clickedNoteId !== client.id) {
+                                setHoveredNoteId(null)
+                              }
+                            }}
+                            className="text-indigo-600 hover:text-indigo-800 focus:outline-none transition-colors"
+                            title="View note"
+                          >
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                              />
+                            </svg>
+                          </button>
+                          {(hoveredNoteId === client.id || clickedNoteId === client.id) && (
+                            <div 
+                              className="absolute z-50 left-0 top-full mt-2 w-64 p-3 bg-gray-900 text-white text-sm rounded-lg shadow-xl pointer-events-auto"
+                              onMouseEnter={() => setHoveredNoteId(client.id)}
+                              onMouseLeave={() => {
+                                if (clickedNoteId !== client.id) {
+                                  setHoveredNoteId(null)
+                                }
+                              }}
+                            >
+                              <div className="whitespace-normal break-words">{client.obs}</div>
+                              <div className="absolute -top-1 left-4 w-2 h-2 bg-gray-900 transform rotate-45"></div>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        '-'
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(client.data_nasc)}
