@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { authenticateUser, createSession } from '../lib/auth.js'
 
-function Login({ onLogin, onSwitchToSignup }) {
+function Login({ onLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -49,13 +49,7 @@ function Login({ onLogin, onSwitchToSignup }) {
             Sign in to DWMANAGER
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Or{' '}
-            <button
-              onClick={onSwitchToSignup}
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              create a new account
-            </button>
+            Contact your administrator to create an account
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

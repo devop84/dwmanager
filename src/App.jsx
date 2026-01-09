@@ -6,13 +6,11 @@ import Hotels from './pages/Hotels'
 import AddClient from './pages/AddClient'
 import Users from './pages/Users'
 import Login from './pages/Login'
-import Signup from './pages/Signup'
 import { getSession, deleteSession } from './lib/auth.js'
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [showSignup, setShowSignup] = useState(false)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -49,11 +47,6 @@ function App() {
   const handleLogin = (userData) => {
     setUser(userData)
     setIsAuthenticated(true)
-  }
-
-  const handleSignup = (userData) => {
-    // After signup, automatically log in
-    handleLogin(userData)
   }
 
   const handleLogout = async () => {
@@ -120,20 +113,11 @@ function App() {
     )
   }
 
-  // Show login/signup if not authenticated
+  // Show login if not authenticated
   if (!isAuthenticated) {
-    if (showSignup) {
-      return (
-        <Signup
-          onSignup={handleSignup}
-          onSwitchToLogin={() => setShowSignup(false)}
-        />
-      )
-    }
     return (
       <Login
         onLogin={handleLogin}
-        onSwitchToSignup={() => setShowSignup(true)}
       />
     )
   }
